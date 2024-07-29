@@ -28,11 +28,13 @@ export default async function handler(
         profileImageUrl: clerkUser.imageUrl,
         firstName: clerkUser.firstName || "",
         lastName: clerkUser.lastName || "",
+        createdAt: new Date(),
+        updatedAt: new Date(),
       })
       .returning();
 
-    // return res.status(200).json(newUser[0]);
-    return NextResponse.redirect("http://localhost:3000");
+    return res.status(200).json(newUser[0]);
+    // return NextResponse.redirect("http://localhost:3000");
   } catch (error) {
     console.error("Error creating user:", error);
     return res.status(500).json({ error: "Internal Server Error" });
