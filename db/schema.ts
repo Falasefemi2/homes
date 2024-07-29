@@ -1,9 +1,9 @@
 /** @format */
 
-import { pgTable, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, varchar } from "drizzle-orm/pg-core";
 
 export const User = pgTable("users", {
-  id: uuid("id").primaryKey().defaultRandom(),
+  id: varchar("id", { length: 255 }).primaryKey(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   profileImageUrl: text("profile_image_url"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
