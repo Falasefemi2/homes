@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import DesktopLogo from "../../public/airbnb-desktop.png"
 import MobileLogo from "../../public/airbnb-mobile.webp"
-import UserNav from "./Usernav";
+import { UserNav } from "./Usernav";
+
 
 export default function Navbar() {
     return (
