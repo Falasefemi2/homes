@@ -1,6 +1,7 @@
 /** @format */
 
 import {
+  boolean,
   integer,
   pgTable,
   text,
@@ -8,7 +9,6 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
 
 export const User = pgTable("users", {
   id: varchar("id", { length: 255 }).primaryKey(),
@@ -22,6 +22,9 @@ export const User = pgTable("users", {
 
 export const Home = pgTable("homes", {
   id: uuid("id").primaryKey().defaultRandom(),
+  userId: varchar("user_id", { length: 255 })
+    .notNull()
+    .references(() => User.id),
   title: text("title").notNull(),
   description: text("description").notNull(),
   guests: text("guests").notNull(),
@@ -30,9 +33,13 @@ export const Home = pgTable("homes", {
   country: text("country").notNull(),
   photo: text("photo").notNull(),
   price: integer("price").notNull(),
+  categoryName: text("categoryName").notNull(),
+
+  addedCategory: boolean("addedCategory").notNull().default(false),
+  addedDescription: boolean("addedDescription").notNull().default(false),
+  addedLocation: boolean("addedLocation").notNull().default(false),
+
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-export const usersRelations = relations(User, ({ many }) => ({
-  Home: many(Home),
-}));
+export const schema = { User, Home };

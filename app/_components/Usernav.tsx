@@ -1,7 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import db from "@/db/drizzle";
 import { User } from "@/db/schema";
 import {
     SignInButton,
@@ -13,12 +12,18 @@ import { eq, sql } from "drizzle-orm";
 
 import { MenuIcon } from "lucide-react";
 import Link from "next/link";
+import { createAirbnbHome } from "../actions";
+import { db } from "@/db/drizzle";
 
 
 export async function UserNav() {
+
     const { userId } = auth();
     const user = await currentUser();
 
+    const createHomeWithId = createAirbnbHome.bind(null, {
+        userId: user?.id as string,
+    })
 
 
     if (user && userId) {
@@ -63,7 +68,7 @@ export async function UserNav() {
                 {user ? (
                     <>
                         <DropdownMenuItem>
-                            <form className="w-full">
+                            <form action={createHomeWithId} className="w-full">
                                 <button type="submit" className="w-full text-start">Airbnb your Home</button>
                             </form>
                         </DropdownMenuItem>
@@ -78,37 +83,28 @@ export async function UserNav() {
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="p-0">
-                            {/* <Button variant="outline" className="w-full px-2 py-1.5 text-left">
+                            <Button variant="outline" className="w-full px-2 py-1.5 text-left">
                                 <SignOutButton>
                                     Logout
                                 </SignOutButton>
-                            </Button> */}
-                            <SignOutButton>
-                                Logout
-                            </SignOutButton>
+                            </Button>
                         </DropdownMenuItem>
                     </>
                 ) : (
                     <>
                         <DropdownMenuItem className="p-0">
-                            {/* <Button variant="outline" className="w-full px-2 py-1.5 text-left">
+                            <Button variant="outline" className="w-full px-2 py-1.5 text-left">
                                 <SignUpButton>
                                     Register
                                 </SignUpButton>
-                            </Button> */}
-                            <SignUpButton>
-                                Register
-                            </SignUpButton>
+                            </Button>
                         </DropdownMenuItem>
                         <DropdownMenuItem className="p-0">
-                            {/* <Button variant="outline" className="w-full px-2 py-1.5 text-left">
+                            <Button variant="outline" className="w-full px-2 py-1.5 text-left">
                                 <SignInButton>
                                     Login
                                 </SignInButton>
-                            </Button> */}
-                            <SignInButton>
-                                Login
-                            </SignInButton>
+                            </Button>
                         </DropdownMenuItem>
                     </>
                 )}
