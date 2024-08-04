@@ -3,12 +3,14 @@
 import {
   boolean,
   integer,
-  pgTable,
+  pgTableCreator,
   text,
   timestamp,
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
+
+const pgTable = pgTableCreator((name) => `project1_${name}`);
 
 export const User = pgTable("users", {
   id: varchar("id", { length: 255 }).primaryKey(),

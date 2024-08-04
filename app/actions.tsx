@@ -2,21 +2,16 @@
 
 import { db } from "@/db/drizzle";
 import { Home } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 
-
 export async function createAirbnbHome({ userId }: { userId: string }) {
-    // First, try to find an existing home for the user
+    // Find the most recently created home for the user
     const existingHomes = await db.select()
         .from(Home)
         .where(eq(Home.userId, userId))
+        .orderBy(desc(Home.createdAt))
         .limit(1);
-
-    let homeId: string;
-    let addedCategory: boolean;
-    let addedDescription: boolean;
-    let addedLocation: boolean;
 
     if (existingHomes.length === 0) {
         // If no home exists, create a new one
@@ -35,37 +30,44 @@ export async function createAirbnbHome({ userId }: { userId: string }) {
                 addedCategory: false,
                 addedDescription: false,
                 addedLocation: false
+
             })
             .returning();
 
-        homeId = newHome.id;
-        addedCategory = false;
-        addedDescription = false;
-        addedLocation = false;
+        return redirect(`/create/${newHome.id}/structure`);
     } else {
-        // If a home exists, use its values
         const existingHome = existingHomes[0];
-        homeId = existingHome.id;
-        addedCategory = existingHome.addedCategory;
-        addedDescription = existingHome.addedDescription;
-        addedLocation = existingHome.addedLocation;
-    }
 
-    if (!addedCategory) {
-        // If category is not added, redirect to structure page
-        return redirect(`/create/${homeId}/structure`);
-    } else if (addedCategory && !addedDescription) {
-        // If category is added but description is not, redirect to description page
-        return redirect(`/create/${homeId}/description`);
-    } else if (addedCategory && addedDescription && !addedLocation) {
-        // If category and description are added but location is not, redirect to location page
-        return redirect(`/create/${homeId}/location`);
-    } else {
-        // All steps are complete, redirect to a different page (e.g., the home details page)
-        return redirect(`/homes/${homeId}`);
+        if (!existingHome.addedCategory && !existingHome.addedDescription && !existingHome.addedLocation) {
+            return redirect(`/create/${existingHome.id}/structure`);
+        } else if (existingHome.addedCategory && !existingHome.addedDescription) {
+            return redirect(`/create/${existingHome.id}/description`);
+        } else if (existingHome.addedCategory && existingHome.addedDescription && !existingHome.addedLocation) {
+            return redirect(`/create/${existingHome.id}/address`);
+        } else if (existingHome.addedCategory && existingHome.addedDescription && existingHome.addedLocation) {
+            // Create a new home if all steps are completed
+            const [newHome] = await db.insert(Home)
+                .values({
+                    userId: userId,
+                    title: '',
+                    description: '',
+                    guests: '',
+                    bedrooms: '',
+                    bathrooms: '',
+                    country: '',
+                    photo: '',
+                    price: 0,
+                    categoryName: "",
+                    addedCategory: false,
+                    addedDescription: false,
+                    addedLocation: false
+                })
+                .returning();
+
+            return redirect(`/create/${newHome.id}/structure`);
+        }
     }
 }
-
 
 
 export async function createCategoryPage(formData: FormData) {
