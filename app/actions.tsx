@@ -2,8 +2,11 @@
 
 import { db } from "@/db/drizzle";
 import { Home } from "@/db/schema";
+import { generateReactHelpers } from "@uploadthing/react";
 import { desc, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
+import { OurFileRouter } from "./api/uploadthing/core";
+
 
 export async function createAirbnbHome({ userId }: { userId: string }) {
     // Find the most recently created home for the user
@@ -99,5 +102,55 @@ export async function createCategoryPage(formData: FormData) {
         console.error('Error updating home:', error);
         // Handle the error appropriately (e.g., show an error message to the user)
         throw error;
+    }
+}
+
+
+const { uploadFiles } = generateReactHelpers<OurFileRouter>();
+
+export async function createDescription(formData: FormData) {
+
+
+    const title = formData.get('title') as string
+    const description = formData.get('description') as string
+    const price = formData.get('price')
+    const imageFile = formData.get('image') as File
+
+    const guestsNumbers = formData.get("guests") as string
+    const roomNumbers = formData.get("rooms") as string
+    const bedroomsNumbers = formData.get("bedrooms") as string
+
+    try {
+        // Upload the image
+        const uploadResponse = await uploadFiles({
+            endpoint: "imageUpload",
+            files: [imageFile],
+        });
+
+        if (uploadResponse && uploadResponse[0]) {
+            const imageUrl = uploadResponse[0].url;
+
+            // Now you can use the imageUrl along with other form data
+            // to create your description or save to database
+            console.log("Image uploaded successfully:", imageUrl);
+
+            // Your logic to save the description with the image URL
+            // For example:
+            // await saveDescriptionToDatabase({
+            //   title,
+            //   description,
+            //   price,
+            //   imageUrl,
+            //   guestsNumbers,
+            //   roomNumbers,
+            //   bedroomsNumbers,
+            // });
+
+        } else {
+            throw new Error("Image upload failed");
+        }
+    } catch (error) {
+        console.error("Error uploading image:", error);
+        // Handle the error appropriately
     }
 }
