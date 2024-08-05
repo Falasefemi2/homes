@@ -2,10 +2,15 @@
 
 import { db } from "@/db/drizzle";
 import { Home } from "@/db/schema";
-import { generateReactHelpers } from "@uploadthing/react";
+import { generateReactHelpers } from "@uploadthing/react/hooks";
+// import type { OurFileRouter } from "./core";
+
 import { desc, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
-import { OurFileRouter } from "./api/uploadthing/core";
+import { UploadThingError } from "uploadthing/server";
+import type { OurFileRouter } from "./api/uploadthing/core";
+const { uploadFiles } = generateReactHelpers<OurFileRouter>();
+
 
 
 export async function createAirbnbHome({ userId }: { userId: string }) {
@@ -105,9 +110,6 @@ export async function createCategoryPage(formData: FormData) {
     }
 }
 
-
-const { uploadFiles } = generateReactHelpers<OurFileRouter>();
-
 export async function createDescription(formData: FormData) {
 
 
@@ -115,42 +117,64 @@ export async function createDescription(formData: FormData) {
     const description = formData.get('description') as string
     const price = formData.get('price')
     const imageFile = formData.get('image') as File
+    const homeId = formData.get('homeId') as string
 
     const guestsNumbers = formData.get("guests") as string
     const roomNumbers = formData.get("rooms") as string
     const bedroomsNumbers = formData.get("bedrooms") as string
 
     try {
-        // Upload the image
-        const uploadResponse = await uploadFiles({
-            endpoint: "imageUpload",
+        // Upload the image using uploadthings
+        // const uploadResponse = await uploadFiles("imageUploader", {
+        //     files: [imageFile],
+        // });
+
+        // if (!uploadResponse || !uploadResponse[0]) {
+        //     throw new Error("Image upload failed");
+        // }
+
+        // const imageUrl = uploadResponse[0].url;
+        const uploadResponse = await uploadFiles("imageUpload", {
             files: [imageFile],
         });
+        console.log("Upload response:", uploadResponse);
 
-        if (uploadResponse && uploadResponse[0]) {
-            const imageUrl = uploadResponse[0].url;
-
-            // Now you can use the imageUrl along with other form data
-            // to create your description or save to database
-            console.log("Image uploaded successfully:", imageUrl);
-
-            // Your logic to save the description with the image URL
-            // For example:
-            // await saveDescriptionToDatabase({
-            //   title,
-            //   description,
-            //   price,
-            //   imageUrl,
-            //   guestsNumbers,
-            //   roomNumbers,
-            //   bedroomsNumbers,
-            // });
-
-        } else {
+        if (!uploadResponse || !uploadResponse[0]) {
             throw new Error("Image upload failed");
         }
+
+        const imageUrl = uploadResponse[0].url;
+        console.log("Image uploaded successfully:", imageUrl);
+
+
+        // Update the home in the database using Drizzle ORM
+        const updatedHome = await db.update(Home)
+            .set({
+                title: title,
+                description: description,
+                price: Number(price),
+                bedrooms: bedroomsNumbers,
+                bathrooms: roomNumbers,
+                guests: guestsNumbers,
+                photo: imageUrl,
+                addedDescription: true,
+            })
+            .where(eq(Home.id, homeId))
+            .returning();
+
+        if (!updatedHome || updatedHome.length === 0) {
+            throw new Error("Failed to update home");
+        }
+
+        return redirect(`/create/${homeId}/address`);
     } catch (error) {
-        console.error("Error uploading image:", error);
+        console.error("Error in CreateDescription:", error);
+        if (error instanceof Error) {
+            console.error("Error message:", error.message);
+            console.error("Error stack:", error.stack);
+        }
         // Handle the error appropriately
+        throw error; // or return an error response
     }
+
 }
