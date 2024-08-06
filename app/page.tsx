@@ -56,7 +56,7 @@ export default async function HomePage({
   return (
     <main className="container mx-auto px-5 lg:px-10">
       <MapFilterItems />
-      <Suspense fallback={<p>Loading....</p>}>
+      <Suspense key={searchParams?.filter} fallback={<p>Loading....</p>}>
         <ShowItem searchParams={searchParams} />
       </Suspense>
     </main>
