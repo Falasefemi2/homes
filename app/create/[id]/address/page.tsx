@@ -5,6 +5,7 @@ import { useCountires } from "@/lib/getCountries";
 import dynamic from "next/dynamic";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
+import CreationButtonBar from "@/app/_components/CreateBottomBar";
 
 
 
@@ -23,9 +24,9 @@ export default function AddressRoute() {
             </div>
 
             <form action="">
-                <div className="w-3/5 mx-auto">
+                <div className="w-3/5 mx-auto mb-36">
                     <div className="mb-5">
-                        <Select required>
+                        <Select required onValueChange={(value) => setLocationValue(value)}>
                             <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Select a Country" />
                             </SelectTrigger>
@@ -45,6 +46,8 @@ export default function AddressRoute() {
                     <LazyMap locationValue={locationValue} />
 
                 </div>
+
+                <CreationButtonBar />
             </form>
         </>
     )
