@@ -5,6 +5,7 @@ import { and, eq } from "drizzle-orm";
 import { Home } from "@/db/schema";
 import { ListingCard } from "./_components/ListingCard";
 import { Suspense } from "react";
+import { SkeletonCard } from "./_components/SkeletonCard";
 
 async function getData({
   searchParams,
@@ -56,7 +57,7 @@ export default async function HomePage({
   return (
     <main className="container mx-auto px-5 lg:px-10">
       <MapFilterItems />
-      <Suspense key={searchParams?.filter} fallback={<p>Loading....</p>}>
+      <Suspense key={searchParams?.filter} fallback={<SkeletonLoading />}>
         <ShowItem searchParams={searchParams} />
       </Suspense>
     </main>
@@ -82,6 +83,20 @@ async function ShowItem({
           price={item.price as number}
         />
       ))}
+    </div>
+  )
+}
+
+function SkeletonLoading() {
+  return (
+    <div className="grid lg:grid-cols-4 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-8">
+      <SkeletonCard />
+      <SkeletonCard />
+      <SkeletonCard />
+      <SkeletonCard />
+      <SkeletonCard />
+      <SkeletonCard />
+      <SkeletonCard />
     </div>
   )
 }
