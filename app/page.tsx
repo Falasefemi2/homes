@@ -4,6 +4,7 @@ import { unstable_noStore as noStore } from "next/cache";
 import { and, eq } from "drizzle-orm";
 import { Home } from "@/db/schema";
 import { ListingCard } from "./_components/ListingCard";
+import { Suspense } from "react";
 
 async function getData({
   searchParams,
@@ -51,18 +52,38 @@ export default async function HomePage({
     filter?: string;
   };
 }) {
-  const data = await getData({ searchParams: searchParams })
+
   return (
     <main className="container mx-auto px-5 lg:px-10">
       <MapFilterItems />
-
-      <div className="grid lg:grid-cols-4 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-8">
-        {data.map((item) => (
-          <ListingCard key={item.id} description={item.description as string} imagePath={item.photo as string} location={item.country as string} price={item.price as number} />
-        ))}
-      </div>
+      <Suspense fallback={<p>Loading....</p>}>
+        <ShowItem searchParams={searchParams} />
+      </Suspense>
     </main>
   );
+}
+
+async function ShowItem({
+  searchParams,
+}: {
+  searchParams?: {
+    filter?: string;
+  };
+}) {
+  const data = await getData({ searchParams: searchParams })
+  return (
+    <div className="grid lg:grid-cols-4 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-8">
+      {data.map((item) => (
+        <ListingCard
+          key={item.id}
+          description={item.description as string}
+          imagePath={item.photo as string}
+          location={item.country as string}
+          price={item.price as number}
+        />
+      ))}
+    </div>
+  )
 }
 
 
