@@ -6,6 +6,7 @@ import { Home } from "@/db/schema";
 import { ListingCard } from "./_components/ListingCard";
 import { Suspense } from "react";
 import { SkeletonCard } from "./_components/SkeletonCard";
+import { NoItems } from "./_components/NoItems";
 
 async function getData({
   searchParams,
@@ -14,7 +15,7 @@ async function getData({
     filter?: string;
   };
 }) {
-  // noStore();
+  noStore();
 
 
   const query = db
@@ -73,23 +74,33 @@ async function ShowItem({
 }) {
   const data = await getData({ searchParams: searchParams })
   return (
-    <div className="grid lg:grid-cols-4 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-8">
-      {data.map((item) => (
-        <ListingCard
-          key={item.id}
-          description={item.description as string}
-          imagePath={item.photo as string}
-          location={item.country as string}
-          price={item.price as number}
+    <>
+      {data.length === 0 ? (
+        <NoItems description="Please check a other category or create your own listing!"
+          title="Sorry no listings found for this category..."
         />
-      ))}
-    </div>
+      ) : (
+        <div className="grid lg:grid-cols-4 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-8">
+          {data.map((item) => (
+            <ListingCard
+              key={item.id}
+              description={item.description as string}
+              imagePath={item.photo as string}
+              location={item.country as string}
+              price={item.price as number}
+            />
+          ))}
+        </div>
+      )}
+    </>
   )
 }
 
 function SkeletonLoading() {
   return (
     <div className="grid lg:grid-cols-4 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-8">
+      <SkeletonCard />
+      <SkeletonCard />
       <SkeletonCard />
       <SkeletonCard />
       <SkeletonCard />
