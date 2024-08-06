@@ -89,7 +89,8 @@ export async function createCategoryPage(formData: FormData) {
         const [updatedHome] = await db
             .update(Home)
             .set({
-                title: categoryName,  // Assuming you want to set the title as the category name
+                // title: categoryName,  // Assuming you want to set the title as the category name
+                categoryName: categoryName,
                 addedCategory: true
             })
             .where(eq(Home.id, homeId))
@@ -121,14 +122,24 @@ export async function createDescription(formData: FormData) {
 
     try {
 
-        const uploadResult = await utapi.uploadFiles(imageFile)
+        const uploadResult = await utapi.uploadFiles(imageFile);
 
-        // Check if uploadResult.data exists and has a url property
-        if (!uploadResult.data || !uploadResult.data.url) {
+
+        if (!uploadResult || uploadResult.error) {
+            throw new Error(`Failed to upload image: ${uploadResult?.error?.message || 'Unknown error'}`);
+        }
+
+        if (!uploadResult.data) {
+            throw new Error("Failed to upload image: No data returned");
+        }
+
+        const imageUrl = uploadResult.data.url;
+        if (!imageUrl) {
             throw new Error("Failed to upload image: No URL returned");
         }
 
-        const imageUrl = uploadResult.data.url
+
+
 
 
         // Update the home in the database using Drizzle ORM
