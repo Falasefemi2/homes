@@ -2,37 +2,34 @@
 
 import { auth } from "@clerk/nextjs/server";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
-import { UploadThingError } from "uploadthing/server";
 
 const f = createUploadthing();
 
-// FileRouter for your app, can contain multiple FileRoutes
 export const ourFileRouter = {
-  // Define as many FileRoutes as you like, each with a unique routeSlug
-  imageUpload: f({ image: { maxFileSize: "4MB", maxFileCount: 40 } })
-    // Set permissions and file types for this FileRoute
-    .middleware(async ({ req }) => {
-      // This code runs on your server before upload
-      const user = auth();
+  // Example "profile picture upload" route - these can be named whatever you want!
+  profilePicture: f(["image"])
+    .middleware(({ req }) => auth())
+    .onUploadComplete((data) => console.log("file", data)),
 
-      // If you throw, the user will not be able to upload
-      if (!user.userId) throw new UploadThingError("Unauthorized");
+  // This route takes an attached image OR video
+  messageAttachment: f(["image", "video"])
+    .middleware(({ req }) => auth())
+    .onUploadComplete((data) => console.log("file", data)),
 
-      // Whatever is returned here is accessible in onUploadComplete as `metadata`
-      return { userId: user.userId };
-    })
-    .onUploadComplete(async ({ metadata, file }) => {
-      // This code RUNS ON YOUR SERVER after upload
-      console.log("Upload complete for userId:", metadata.userId);
+  // Takes exactly ONE image up to 2MB
+  strictImageAttachment: f({
+    image: { maxFileSize: "2MB", maxFileCount: 1, minFileCount: 1 },
+  })
+    .middleware(({ req }) => auth())
+    .onUploadComplete((data) => console.log("file", data)),
 
-      // await db.insert(images).values({
-      //   name: file.name,
-      //   url: file.url,
-      //   userId: metadata.userId,
-      // });
-
-      return { uploadedBy: metadata.userId };
-    }),
+  // Takes up to 4 2mb images and/or 1 256mb video
+  mediaPost: f({
+    image: { maxFileSize: "2MB", maxFileCount: 4 },
+    video: { maxFileSize: "256MB", maxFileCount: 1 },
+  })
+    .middleware(({ req }) => auth())
+    .onUploadComplete((data) => console.log("file", data)),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;

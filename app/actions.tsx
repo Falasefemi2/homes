@@ -9,6 +9,11 @@ import { desc, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { UploadThingError } from "uploadthing/server";
 import type { OurFileRouter } from "./api/uploadthing/core";
+import { auth } from "@clerk/nextjs/server";
+import { utapi } from "./server/uploadthing";
+import { UploadFileResult } from "uploadthing/types";
+// import { utapi } from "~/server/uploadthing.ts";
+
 const { uploadFiles } = generateReactHelpers<OurFileRouter>();
 
 
@@ -111,8 +116,6 @@ export async function createCategoryPage(formData: FormData) {
 }
 
 export async function createDescription(formData: FormData) {
-
-
     const title = formData.get('title') as string
     const description = formData.get('description') as string
     const price = formData.get('price')
@@ -124,27 +127,18 @@ export async function createDescription(formData: FormData) {
     const bedroomsNumbers = formData.get("bedrooms") as string
 
     try {
-        // Upload the image using uploadthings
-        // const uploadResponse = await uploadFiles("imageUploader", {
-        //     files: [imageFile],
-        // });
+        // const imageUrl = await utapi.uploadFiles(imageFile)
 
-        // if (!uploadResponse || !uploadResponse[0]) {
-        //     throw new Error("Image upload failed");
-        // }
+        const uploadResult = await utapi.uploadFiles(imageFile)
 
-        // const imageUrl = uploadResponse[0].url;
-        const uploadResponse = await uploadFiles("imageUpload", {
-            files: [imageFile],
-        });
-        console.log("Upload response:", uploadResponse);
-
-        if (!uploadResponse || !uploadResponse[0]) {
-            throw new Error("Image upload failed");
+        // Check if uploadResult.data exists and has a url property
+        if (!uploadResult.data || !uploadResult.data.url) {
+            throw new Error("Failed to upload image: No URL returned");
         }
 
-        const imageUrl = uploadResponse[0].url;
-        console.log("Image uploaded successfully:", imageUrl);
+        const imageUrl = uploadResult.data.url
+        // Adjust this based on the actual structure of UploadFileResult
+
 
 
         // Update the home in the database using Drizzle ORM
@@ -178,3 +172,6 @@ export async function createDescription(formData: FormData) {
     }
 
 }
+
+
+// const uploadedImageUrl = (imageUrl as UploadFileResult)?.data.url;

@@ -22,14 +22,14 @@ export default function DescriptionPage({ params }: { params: { id: string } }) 
                     </div>
                     <div className="flex flex-col gap-y-2">
                         <Label>Description</Label>
-                        <Textarea name="description" required placeholder="Please decribe your home..." />
+                        <Textarea name="description" required placeholder="Please describe your home..." />
                     </div>
                     <div className="flex flex-col gap-y-2">
                         <Label>Price</Label>
                         <Input name="price" required type="number" placeholder="Price per night in USD" min={10} />
                     </div>
                     <div className="flex flex-col gap-y-2">
-                        <Label>IImage</Label>
+                        <Label>Image</Label>
                         <Input name="image" required type="file" />
                     </div>
                     <Card className="w-full">
@@ -53,7 +53,7 @@ export default function DescriptionPage({ params }: { params: { id: string } }) 
                                     <h3 className="text-lg font-medium underline">Bathrooms</h3>
                                     <p className="text-sm text-muted-foreground">How many bathrooms do you have?</p>
                                 </div>
-                                <Counter name="bathrooms" />
+                                <Counter name="bedrooms" />
                             </div>
                         </CardHeader>
                     </Card>
