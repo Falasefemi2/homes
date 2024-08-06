@@ -2,19 +2,27 @@ import { db } from "@/db/drizzle";
 import { MapFilterItems } from "./_components/MapFilterItem";
 import { unstable_noStore as noStore } from "next/cache";
 import { and, eq } from "drizzle-orm";
-import { Home } from "@/db/schema";
+import { Favorite, Home } from "@/db/schema";
 import { ListingCard } from "./_components/ListingCard";
 import { Suspense } from "react";
 import { SkeletonCard } from "./_components/SkeletonCard";
 import { NoItems } from "./_components/NoItems";
+import { auth } from "@clerk/nextjs/server";
 
-async function getData({
-  searchParams,
-}: {
-  searchParams?: {
-    filter?: string;
-  };
-}) {
+async function getData(
+  {
+    searchParams,
+    userId,
+  }: {
+    userId: string | undefined;
+    searchParams?: {
+      filter?: string;
+      country?: string;
+      guest?: string;
+      room?: string;
+      bathroom?: string;
+    };
+  }) {
   noStore();
 
 
@@ -25,22 +33,22 @@ async function getData({
       price: Home.price,
       description: Home.description,
       country: Home.country,
-      // Favorite: Favorite
+      Favorite: Favorite
     })
     .from(Home)
-    // .leftJoin(Favorite, and(
-    //   eq(Favorite.homeId, Home.id),
-    //   userId ? eq(Favorite.userId, userId) : undefined
-    // ))
+    .leftJoin(Favorite, and(
+      eq(Favorite.homeId, Home.id),
+      userId ? eq(Favorite.userId, userId) : undefined
+    ))
     .where(and(
       eq(Home.addedCategory, true),
       eq(Home.addedLocation, true),
       eq(Home.addedDescription, true),
       searchParams?.filter ? eq(Home.categoryName, searchParams.filter) : undefined,
-      // searchParams?.country ? eq(Home.country, searchParams.country) : undefined,
-      // searchParams?.guest ? eq(Home.guests, searchParams.guest) : undefined,
-      // searchParams?.room ? eq(Home.bedrooms, searchParams.room) : undefined,
-      // searchParams?.bathroom ? eq(Home.bathrooms, searchParams.bathroom) : undefined
+      searchParams?.country ? eq(Home.country, searchParams.country) : undefined,
+      searchParams?.guest ? eq(Home.guests, searchParams.guest) : undefined,
+      searchParams?.room ? eq(Home.bedrooms, searchParams.room) : undefined,
+      searchParams?.bathroom ? eq(Home.bathrooms, searchParams.bathroom) : undefined
     ));
 
   const data = await query;
@@ -72,7 +80,9 @@ async function ShowItem({
     filter?: string;
   };
 }) {
-  const data = await getData({ searchParams: searchParams })
+  const user = auth()
+  const data = await getData({ searchParams: searchParams, userId: user?.userId! })
+
   return (
     <>
       {data.length === 0 ? (
@@ -112,17 +122,3 @@ function SkeletonLoading() {
   )
 }
 
-
-// {
-//   searchParams,
-//   userId,
-// }: {
-//   userId: string | undefined;
-//   searchParams?: {
-//     filter?: string;
-//     country?: string;
-//     guest?: string;
-//     room?: string;
-//     bathroom?: string;
-//   };
-// }

@@ -44,4 +44,11 @@ export const Home = pgTable("homes", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-export const schema = { User, Home };
+export const Favorite = pgTable("favorites", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: varchar("user_id", { length: 255 }).references(() => User.id),
+  homeId: uuid("home_id").references(() => Home.id),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const schema = { User, Home, Favorite };
