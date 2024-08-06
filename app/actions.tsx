@@ -2,19 +2,12 @@
 
 import { db } from "@/db/drizzle";
 import { Home } from "@/db/schema";
-import { generateReactHelpers } from "@uploadthing/react/hooks";
-// import type { OurFileRouter } from "./core";
-
 import { desc, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
-import { UploadThingError } from "uploadthing/server";
-import type { OurFileRouter } from "./api/uploadthing/core";
-import { auth } from "@clerk/nextjs/server";
 import { utapi } from "./server/uploadthing";
-import { UploadFileResult } from "uploadthing/types";
-// import { utapi } from "~/server/uploadthing.ts";
 
-const { uploadFiles } = generateReactHelpers<OurFileRouter>();
+
+
 
 
 
@@ -127,7 +120,6 @@ export async function createDescription(formData: FormData) {
     const bedroomsNumbers = formData.get("bedrooms") as string
 
     try {
-        // const imageUrl = await utapi.uploadFiles(imageFile)
 
         const uploadResult = await utapi.uploadFiles(imageFile)
 
@@ -137,8 +129,6 @@ export async function createDescription(formData: FormData) {
         }
 
         const imageUrl = uploadResult.data.url
-        // Adjust this based on the actual structure of UploadFileResult
-
 
 
         // Update the home in the database using Drizzle ORM
@@ -174,4 +164,3 @@ export async function createDescription(formData: FormData) {
 }
 
 
-// const uploadedImageUrl = (imageUrl as UploadFileResult)?.data.url;
