@@ -6,10 +6,11 @@ import dynamic from "next/dynamic";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
 import CreationButtonBar from "@/app/_components/CreateBottomBar";
+import { createLocation } from "@/app/actions";
 
 
 
-export default function AddressRoute() {
+export default function AddressRoute({ params }: { params: { id: string } }) {
     const { getAllCountires } = useCountires()
     const [locationValue, setLocationValue] = useState("");
 
@@ -23,7 +24,9 @@ export default function AddressRoute() {
                 <h2 className="text-3xl font-semibold tracking-tight transition-colors mb-10">Where is your Home located?</h2>
             </div>
 
-            <form action="">
+            <form action={createLocation}>
+                <input type="hidden" name="homeId" value={params.id} />
+                <input type="hidden" name="countryValue" value={locationValue} />
                 <div className="w-3/5 mx-auto mb-36">
                     <div className="mb-5">
                         <Select required onValueChange={(value) => setLocationValue(value)}>

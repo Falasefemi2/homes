@@ -164,3 +164,17 @@ export async function createDescription(formData: FormData) {
 }
 
 
+export async function createLocation(formData: FormData) {
+    const homeId = formData.get('homeId') as string;
+    const countryValue = formData.get('countryValue') as string;
+
+    const [updatedHome] = await db.update(Home).set({
+        addedLocation: true,
+        country: countryValue,
+    })
+        .where(eq(Home.id, homeId))
+        .returning();
+
+    return redirect('/')
+}
+
