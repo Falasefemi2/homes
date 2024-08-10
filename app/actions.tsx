@@ -2,7 +2,7 @@
 
 import { db } from "@/db/drizzle";
 import { Favorite, Home } from "@/db/schema";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { utapi } from "./server/uploadthing";
 import { revalidatePath } from "next/cache";
@@ -186,4 +186,24 @@ export async function addToFavorite(formData: FormData) {
     revalidatePath(pathName);
 
     return data;
+}
+
+export async function DeleteFromFavorite(formData: FormData) {
+    const favoriteId = formData.get("favoriteId") as string;
+    const pathName = formData.get("pathName") as string;
+    const userId = formData.get("userId") as string;
+
+    const [deletedData] = await db
+        .delete(Favorite)
+        .where(
+            and(
+                eq(Favorite.id, favoriteId),
+                eq(Favorite.userId, userId)
+            )
+        )
+        .returning();
+
+    revalidatePath(pathName);
+
+    return deletedData;
 }
