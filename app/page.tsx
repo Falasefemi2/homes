@@ -9,6 +9,8 @@ import { SkeletonCard } from "./_components/SkeletonCard";
 import { NoItems } from "./_components/NoItems";
 import { auth } from "@clerk/nextjs/server";
 
+
+
 async function getData(
   {
     searchParams,
@@ -98,6 +100,13 @@ async function ShowItem({
               imagePath={item.photo as string}
               location={item.country as string}
               price={item.price as number}
+              userId={user.userId as string}
+              // favoriteId={item.Favorite?.id}
+              favoriteId={item.Favorite?.id ?? ''}
+              // isInfavoriteList={item.Favorite !== null}
+              isInfavoriteList={Boolean(item.Favorite)}
+              homeId={item.id}
+              pathName="/"
             />
           ))}
         </div>
