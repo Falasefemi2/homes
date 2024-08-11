@@ -214,20 +214,14 @@ export async function createReservation(formData: FormData) {
     const startDate = formData.get("startDate") as string;
     const endDate = formData.get("endDate") as string;
 
-    try {
-        const [data] = await db.insert(Reservation).values({
-            userId: userId,
-            homeId: homeId,
-            startDate: new Date(startDate), // Convert string to Date object
-            endDate: new Date(endDate), // Convert string to Date object
-        }).returning();
+    // Create the reservation using Drizzle ORM
+    const [newReservation] = await db.insert(Reservation).values({
+        userId,
+        homeId,
+        startDate: new Date(startDate), // Convert string to Date object
+        endDate: new Date(endDate), // Convert string to Date object
+    }).returning();
 
-        // If you need the inserted data, it's available in the 'data' variable
-
-        return redirect("/");
-    } catch (error) {
-        console.error('Error creating reservation:', error);
-        // Handle the error appropriately
-        throw error; // or return an error response
-    }
+    return redirect("/");
 }
+
