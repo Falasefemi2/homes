@@ -84,6 +84,8 @@ async function ShowItem({
 }) {
   const user = auth()
   const data = await getData({ searchParams: searchParams, userId: user?.userId! })
+  console.log(data);
+
 
   return (
     <>

@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db/drizzle";
-import { Favorite, Home } from "@/db/schema";
+import { Favorite, Home, Reservation } from "@/db/schema";
 import { and, desc, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { utapi } from "./server/uploadthing";
@@ -206,4 +206,28 @@ export async function DeleteFromFavorite(formData: FormData) {
     revalidatePath(pathName);
 
     return deletedData;
+}
+
+export async function createReservation(formData: FormData) {
+    const userId = formData.get("userId") as string;
+    const homeId = formData.get("homeId") as string;
+    const startDate = formData.get("startDate") as string;
+    const endDate = formData.get("endDate") as string;
+
+    try {
+        const [data] = await db.insert(Reservation).values({
+            userId: userId,
+            homeId: homeId,
+            startDate: new Date(startDate), // Convert string to Date object
+            endDate: new Date(endDate), // Convert string to Date object
+        }).returning();
+
+        // If you need the inserted data, it's available in the 'data' variable
+
+        return redirect("/");
+    } catch (error) {
+        console.error('Error creating reservation:', error);
+        // Handle the error appropriately
+        throw error; // or return an error response
+    }
 }

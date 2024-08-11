@@ -51,4 +51,24 @@ export const Favorite = pgTable("favorites", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-export const schema = { User, Home, Favorite };
+export const Reservation = pgTable("reservations", {
+  id: uuid("id").primaryKey().defaultRandom(),
+
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+
+  userId: varchar("user_id", { length: 255 }).references(() => User.id),
+  homeId: uuid("home_id").references(() => Home.id),
+});
+
+export const schema = { User, Home, Favorite, Reservation };
+
+// export const Reservation = pgTable("reservation", {
+//   id: uuid("id").primaryKey().defaultRandom(),
+//   startDate: timestamp("start_date").notNull(),
+//   endDate: timestamp("end_date").notNull(),
+//   createdAt: timestamp("created_at").defaultNow().notNull(),
+//   userId: uuid("user_id").references(() => User.id),
+//   homeId: uuid("home_id").references(() => Home.id),
+// });
