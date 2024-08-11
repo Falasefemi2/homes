@@ -1,8 +1,8 @@
 import { File, FileQuestion } from "lucide-react";
 
 interface IappProps {
-    title: string;
-    description: string;
+    title?: string;
+    description?: string;
 }
 
 export function NoItems({ description, title }: IappProps) {
