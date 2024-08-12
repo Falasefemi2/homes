@@ -103,7 +103,7 @@ export default async function HomeRoute({ params }: { params: { id: string } }) 
                             <ReservationSubmitButton />
                         ) : (
                             <Button className="w-full" asChild>
-                                <Link href="/sign-up">Make a Reservation</Link>
+                                <Link href="/sign-in">Make a Reservation</Link>
                             </Button>
                             // <SignInButton mode="modal">
                             //     <Button className="w-full">
