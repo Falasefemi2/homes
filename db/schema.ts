@@ -63,12 +63,3 @@ export const Reservation = pgTable("reservations", {
 });
 
 export const schema = { User, Home, Favorite, Reservation };
-
-// export const Reservation = pgTable("reservation", {
-//   id: uuid("id").primaryKey().defaultRandom(),
-//   startDate: timestamp("start_date").notNull(),
-//   endDate: timestamp("end_date").notNull(),
-//   createdAt: timestamp("created_at").defaultNow().notNull(),
-//   userId: uuid("user_id").references(() => User.id),
-//   homeId: uuid("home_id").references(() => Home.id),
-// });

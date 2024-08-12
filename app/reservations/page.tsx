@@ -40,7 +40,7 @@ export default async function ReservationRoute() {
 
     return (
         <div className="container mx-atuo px-5 lg:px-10 mt-10">
-            <h2 className="text-3xl font-semibold tracking-tight">Your Favorites</h2>
+            <h2 className="text-3xl font-semibold tracking-tight">Your Reservations</h2>
             {data.length === 0 ? (
                 <NoItems
                     title="Hey you dont have any reservations"
