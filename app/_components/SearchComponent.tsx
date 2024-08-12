@@ -74,7 +74,7 @@ export function SearchModel() {
                             <DialogHeader>
                                 <DialogTitle>Select all the info you need</DialogTitle>
                                 <DialogDescription>
-                                    Pleae Choose a Country, so that what you want
+                                    Please Choose a Country, so that what you want
                                 </DialogDescription>
                             </DialogHeader>
 
