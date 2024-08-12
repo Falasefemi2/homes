@@ -102,14 +102,14 @@ export default async function HomeRoute({ params }: { params: { id: string } }) 
                         {user?.userId ? (
                             <ReservationSubmitButton />
                         ) : (
-                            // <Button className="w-full" asChild>
-                            //   <Link href="/">Make a Reservation</Link>
-                            // </Button>
-                            <SignInButton mode="modal">
-                                <Button className="w-full">
-                                    Sign in to Make a Reservation
-                                </Button>
-                            </SignInButton>
+                            <Button className="w-full" asChild>
+                                <Link href="/sign-up">Make a Reservation</Link>
+                            </Button>
+                            // <SignInButton mode="modal">
+                            //     <Button className="w-full">
+                            //         Sign in to Make a Reservation
+                            //     </Button>
+                            // </SignInButton>
 
                         )}
                     </form>
